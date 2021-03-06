@@ -145,10 +145,11 @@ else:
 # Configure PVOutput
 if hasattr(config, "pvoutput_api"):
     class PVOutputPublisher(object):
-        def __init__(self, api_key, system_id, status_url="https://pvoutput.org/service/r2/addstatus.jsp"):
+        def __init__(self, api_key, system_id, rate_limit=60, status_url="https://pvoutput.org/service/r2/addstatus.jsp"):
             self.api_key = api_key
             self.system_id = system_id
             self.status_url = status_url
+            self.rate_limit = rate_limit
 
         @property
         def headers(self):
@@ -170,9 +171,16 @@ if hasattr(config, "pvoutput_api"):
             * v5 - Inverter Temperature
             * v6 - Voltage (we post Grid voltage)
             """
+            global pvoutput_last
             at_least_one_of = set(["v1", "v2", "v3", "v4"])
 
             now = datetime.datetime.now()
+            try:
+                time_diff = (now - pvoutput_last).total_seconds()
+            except Exception:
+                time_diff = 3600 / self.rate_limit
+            if time_diff < (3600 / self.rate_limit):
+                return 'skipped'
 
             parameters = {
                 "d": now.strftime("%Y%m%d"),
@@ -202,13 +210,14 @@ if hasattr(config, "pvoutput_api"):
                 raise RuntimeError("Metrics => PVOutput mapping failed, please review metric names and update")
 
             response = requests.request("POST", url=self.status_url, headers=self.headers, params=parameters)
+            pvoutput_last = now
 
             if response.status_code != requests.codes.ok:
                 raise RuntimeError(response.text)
             else:
                 logging.debug("Successfully posted status update to PVOutput")
 
-    pvoutput_client = PVOutputPublisher(config.pvoutput_api, config.pvoutput_sid)
+    pvoutput_client = PVOutputPublisher(config.pvoutput_api, config.pvoutput_sid, config.pvoutput_rate_limit)
 
     logging.info("Configured PVOutput Client")
 else:
@@ -356,7 +365,10 @@ def publish_mqtt(inverter):
 
 def publish_pvoutput(inverter):
     result = pvoutput_client.publish_status(inverter)
-    logging.info("Published to PVOutput")
+    if result == 'skipped':
+        logging.info("Skipping PVOutput to stay under the rate limit")
+    else:
+        logging.info("Published to PVOutput")
     return result
 
 # Core monitoring loop

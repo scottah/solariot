@@ -28,3 +28,4 @@ influxdb_verify_ssl = False
 # Optional
 #pvoutput_api = "api_key"
 #pvoutput_sid = "system_id"
+#pvoutput_rate_limit = 60

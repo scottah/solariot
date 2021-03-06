@@ -105,7 +105,8 @@ We offer direct integration to publishing metrics to the 'Add Status' [API endpo
 
 Supported values are `v1` through to `v6` and an assumption that `v1` and `v3` are values are incremental and reset every day.
 
-All you need to do is set the `pvoutput_api` and `pvoutput_sid` values in `config.py` file and you'll be publishing in no time!
+All you need to do is set the `pvoutput_api`, `pvoutput_sid` and `pvoutput_rate_limit` values in `config.py` file and 
+you'll be publishing in no time!
 
 ## Integration with PVOutput.org and Grafana
 
