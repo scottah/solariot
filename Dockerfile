@@ -7,4 +7,4 @@ RUN pip3 install --upgrade pip wheel && pip3 install --upgrade -r requirements.t
 
 ENV PYTHONPATH="/config:$PYTHONPATH"
 
-CMD ["pyhton","solariot.py"]
+CMD ["python","solariot.py"]
