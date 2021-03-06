@@ -23,36 +23,49 @@ To visual the telemetry, use a dashboard such as Grafana. For example, this is M
 
 ## Pre-requisites
 
-The Inverter must be accessible on the network using TCP.
+* The Inverter must be accessible on the network using TCP.
 
-This script should work on most Inverters that talk Modbus TCP. You can 
+* This Python script should work on most Inverters that talk Modbus TCP. You can 
 customise your own modbus register file.
 
-Run on Python 3.5+.
-
-Install the required Python libraries:
-
-```
-pip install -r requirements.txt
-```
+* Run on Python 3.5+.
 
 ## Installation
 
-1. Download or clone this repository to your local workstation. Install the 
-required libraries (see Pre-requisites section above).
-
-2. Update the config.py with your values, such as the Inverter's IP address, 
+1. Download or clone this repository to your local workstation.
+    ```
+    git clone https://github.com/meltaxa/solariot.git
+    cd solariot
+    ```
+   
+2. Install the required libraries.
+    ```
+    pip install -r requirements.txt
+    ```
+   
+3. Update the config.py with your values, such as the Inverter's IP address, 
 port, inverter model (which corresponds to the modbus register file) and the
-register addresses Solariot should scan from.
+register addresses Solariot should scan from. Enable optional support for MQTT,
+PVOutput, InfluxDB and more.
 
-3. Run the solariot.py script.
+4. Run the solariot.py script. 
+    ```
+    ./solariot.py
+    ```
+   * Command line options:
+    ```
+    -c             Python module to load as our config. Default is config.py.
+    -v             Level of verbosity 0=ERROR 1=INFO 2=DEBUG.
+    --one-shot     Run solariot just once then exit.
+    ```
+## Docker
 
-## Troubleshooting
+1. Create a directory for the config file [config.py].
 
-*[ERROR] 'ModbusIOException' object has no attribute 'registers'*
-Check your Inverter's "address" (as opposed to IP address) matches the slave 
-id in the config file. Default is 0x01. Also, try increasing the timeout or
-scan_interval in the config.py file to reduce the noise.
+2. Create a config.py (see config-example.py) and place it in the config directory.
+
+3. Run the Docker image with the volume switch to mount your config directory as /config in the image
+   * `docker run -v <localpath>:/config meltaxa/solariot`
 
 ## Next Steps
 
