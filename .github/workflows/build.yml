@@ -1,4 +1,4 @@
-name: "[builder] CI for releases"
+name: "[builder] CI for master and feature branches"
 
 on:
   repository_dispatch:
