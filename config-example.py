@@ -4,7 +4,7 @@ inverter_port = 502
 # Sungrow: 0x01
 # SMA: 3
 slave = 0x01
-model = "sungrow-sh5k"
+model = "sungrow-sg8kd"
 timeout = 3
 scan_interval = 10
 
